@@ -1,41 +1,40 @@
-import server from './environment';
-
 // Frontend authentication utilities
-const API_BASE_URL = `${server}/api/v1`;
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
 
 // Token management
 export const getAuthToken = () => {
-  if (typeof window !== 'undefined') {
-    return localStorage.getItem('meetease_auth_token');
+  if (typeof window !== "undefined") {
+    return localStorage.getItem("meetease_auth_token");
   }
   return null;
 };
 
 export const setAuthToken = (token) => {
-  if (typeof window !== 'undefined') {
-    localStorage.setItem('meetease_auth_token', token);
+  if (typeof window !== "undefined") {
+    localStorage.setItem("meetease_auth_token", token);
   }
 };
 
 export const removeAuthToken = () => {
-  if (typeof window !== 'undefined') {
-    localStorage.removeItem('meetease_auth_token');
-    localStorage.removeItem('meetease_user_data');
+  if (typeof window !== "undefined") {
+    localStorage.removeItem("meetease_auth_token");
+    localStorage.removeItem("meetease_user_data");
   }
 };
 
 // User data management
 export const getUserData = () => {
-  if (typeof window !== 'undefined') {
-    const userData = localStorage.getItem('meetease_user_data');
+  if (typeof window !== "undefined") {
+    const userData = localStorage.getItem("meetease_user_data");
     return userData ? JSON.parse(userData) : null;
   }
   return null;
 };
 
 export const setUserData = (userData) => {
-  if (typeof window !== 'undefined') {
-    localStorage.setItem('meetease_user_data', JSON.stringify(userData));
+  if (typeof window !== "undefined") {
+    localStorage.setItem("meetease_user_data", JSON.stringify(userData));
   }
 };
 
@@ -44,7 +43,7 @@ export const authRequest = async (endpoint, options = {}) => {
   try {
     const token = getAuthToken();
     const headers = {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       ...options.headers,
     };
 
@@ -63,29 +62,29 @@ export const authRequest = async (endpoint, options = {}) => {
       return {
         success: false,
         error: true,
-        message: data.message || 'Something went wrong',
-        status: response.status
+        message: data.message || "Something went wrong",
+        status: response.status,
       };
     }
 
     return {
       success: true,
-      ...data
+      ...data,
     };
   } catch (error) {
     return {
       success: false,
       error: true,
-      message: 'Network error. Please check your connection.',
-      originalError: error.message
+      message: "Network error. Please check your connection.",
+      originalError: error.message,
     };
   }
 };
 
 // Auth API functions
 export const loginUser = async (email, password) => {
-  const result = await authRequest('/users/login', {
-    method: 'POST',
+  const result = await authRequest("/users/login", {
+    method: "POST",
     body: JSON.stringify({ email, password }),
   });
 
@@ -99,8 +98,8 @@ export const loginUser = async (email, password) => {
 };
 
 export const registerUser = async (name, username, email, password) => {
-  const result = await authRequest('/users/register', {
-    method: 'POST',
+  const result = await authRequest("/users/register", {
+    method: "POST",
     body: JSON.stringify({ name, username, email, password }),
   });
 
@@ -114,12 +113,12 @@ export const registerUser = async (name, username, email, password) => {
 };
 
 export const getUserProfile = async () => {
-  return await authRequest('/users/profile');
+  return await authRequest("/users/profile");
 };
 
 export const updateUserProfile = async (profileData) => {
-  return await authRequest('/users/profile', {
-    method: 'PUT',
+  return await authRequest("/users/profile", {
+    method: "PUT",
     body: JSON.stringify(profileData),
   });
 };
@@ -127,8 +126,8 @@ export const updateUserProfile = async (profileData) => {
 export const logoutUser = () => {
   removeAuthToken();
   // Redirect to home page
-  if (typeof window !== 'undefined') {
-    window.location.href = '/';
+  if (typeof window !== "undefined") {
+    window.location.href = "/";
   }
 };
 

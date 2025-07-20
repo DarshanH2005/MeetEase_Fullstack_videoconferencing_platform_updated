@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   Box,
   Typography,
@@ -22,7 +22,6 @@ import BackgroundGradient from "../common/BackgroundGradient";
 import EnhancedTextField from "../common/EnhancedTextField";
 import EnhancedButton from "../common/EnhancedButton";
 import { useApp } from "../../context/AppContext";
-import server from "../../utils/environment";
 
 const FormContainer = styled(Box)(({ theme }) => ({
   padding: theme.spacing(4),
@@ -61,55 +60,8 @@ const SocialButton = styled(motion.button)(({ theme }) => ({
 }));
 
 export default function RegisterHero() {
-  // Server status: 'starting', 'connected', 'error'
-  const [serverStatus, setServerStatus] = useState("starting");
   const { actions } = useApp();
   const { showNotification } = actions;
-
-  useEffect(() => {
-    let isMounted = true;
-    const checkServer = async () => {
-      try {
-        console.log("Checking server status...");
-        const pingUrl = `${server}/auth/ping`;
-        console.log("Pinging server at:", pingUrl);
-        const response = await fetch(pingUrl, {
-          method: "GET",
-          credentials: "include",
-          headers: {
-            Accept: "application/json",
-          },
-        });
-
-        if (!isMounted) return;
-
-        if (response.ok) {
-          const data = await response.json();
-          console.log("Server response:", data);
-          setServerStatus("connected");
-        } else {
-          console.log("Server responded with status:", response.status);
-          setServerStatus("error");
-        }
-      } catch (error) {
-        if (!isMounted) return;
-        console.error("Server check failed:", error);
-        setServerStatus("error");
-      }
-    };
-
-    // Initial check
-    checkServer();
-
-    // Set up interval for subsequent checks
-    const interval = setInterval(checkServer, 5000);
-
-    return () => {
-      isMounted = false;
-      clearInterval(interval);
-    };
-  }, []);
-
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -209,57 +161,6 @@ export default function RegisterHero() {
   return (
     <BackgroundGradient>
       <FormContainer>
-        {/* Server status indicator */}
-        <Box
-          sx={{
-            mb: 2,
-            textAlign: "center",
-            p: 1,
-            borderRadius: 1,
-            backgroundColor: "background.paper",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 1,
-          }}
-        >
-          {serverStatus === "starting" && (
-            <Typography
-              variant="body2"
-              sx={{ display: "flex", alignItems: "center", gap: 1 }}
-            >
-              <span
-                style={{
-                  display: "inline-block",
-                  width: "8px",
-                  height: "8px",
-                  backgroundColor: "#f59e0b",
-                  borderRadius: "50%",
-                  animation: "pulse 1.5s infinite",
-                }}
-              ></span>
-              <span style={{ color: "#f59e0b" }}>Connecting to server...</span>
-            </Typography>
-          )}
-          {serverStatus === "connected" && (
-            <Typography
-              variant="body2"
-              sx={{ display: "flex", alignItems: "center", gap: 1 }}
-            >
-              <span style={{ color: "#10b981" }}>✓ Server connected</span>
-            </Typography>
-          )}
-          {serverStatus === "error" && (
-            <Typography
-              variant="body2"
-              sx={{ display: "flex", alignItems: "center", gap: 1 }}
-            >
-              <span style={{ color: "#ef4444" }}>
-                × Server unavailable - retrying...
-              </span>
-            </Typography>
-          )}
-        </Box>
         <Box component="form" onSubmit={handleSubmit} noValidate>
           <Stack spacing={3}>
             {/* Social Registration Buttons */}
@@ -306,7 +207,6 @@ export default function RegisterHero() {
               fullWidth
               label="Full Name"
               type="text"
-              autoComplete="name"
               value={formData.fullName}
               onChange={handleInputChange("fullName")}
               error={!!errors.fullName}
@@ -326,7 +226,6 @@ export default function RegisterHero() {
               fullWidth
               label="Email"
               type="email"
-              autoComplete="email"
               value={formData.email}
               onChange={handleInputChange("email")}
               error={!!errors.email}
@@ -346,7 +245,6 @@ export default function RegisterHero() {
               fullWidth
               label="Password"
               type={showPassword ? "text" : "password"}
-              autoComplete="new-password"
               value={formData.password}
               onChange={handleInputChange("password")}
               error={!!errors.password}
@@ -377,7 +275,6 @@ export default function RegisterHero() {
               fullWidth
               label="Confirm Password"
               type={showConfirmPassword ? "text" : "password"}
-              autoComplete="new-password"
               value={formData.confirmPassword}
               onChange={handleInputChange("confirmPassword")}
               error={!!errors.confirmPassword}

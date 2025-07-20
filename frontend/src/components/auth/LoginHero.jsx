@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/router";
 import {
   Box,
@@ -18,7 +18,6 @@ import EnhancedTextField from "../common/EnhancedTextField";
 import EnhancedButton from "../common/EnhancedButton";
 import { useApp } from "../../context/AppContext";
 import { loginUser } from "../../utils/auth";
-import server from "../../utils/environment";
 
 const FormContainer = styled(Box)(({ theme }) => ({
   padding: theme.spacing(4),
@@ -57,56 +56,9 @@ const SocialButton = styled(motion.button)(({ theme }) => ({
 }));
 
 export default function LoginHero() {
-  // Server status: 'starting', 'connected', 'error'
-  const [serverStatus, setServerStatus] = useState("starting");
   const router = useRouter();
   const { actions } = useApp();
   const { showNotification, setUserData, setAuthenticated } = actions;
-
-  useEffect(() => {
-    let isMounted = true;
-    const checkServer = async () => {
-      try {
-        console.log("Checking server status...");
-        const pingUrl = `${server}/auth/ping`;
-        console.log("Pinging server at:", pingUrl);
-        const response = await fetch(pingUrl, {
-          method: "GET",
-          credentials: "include",
-          headers: {
-            Accept: "application/json",
-          },
-        });
-
-        if (!isMounted) return;
-
-        if (response.ok) {
-          const data = await response.json();
-          console.log("Server response:", data);
-          setServerStatus("connected");
-        } else {
-          console.log("Server responded with status:", response.status);
-          setServerStatus("error");
-        }
-      } catch (error) {
-        if (!isMounted) return;
-        console.error("Server check failed:", error);
-        setServerStatus("error");
-      }
-    };
-
-    // Initial check
-    checkServer();
-
-    // Set up interval for subsequent checks
-    const interval = setInterval(checkServer, 5000);
-
-    return () => {
-      isMounted = false;
-      clearInterval(interval);
-    };
-  }, []);
-
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -217,57 +169,6 @@ export default function LoginHero() {
   return (
     <BackgroundGradient>
       <FormContainer>
-        {/* Server status indicator */}
-        <Box
-          sx={{
-            mb: 2,
-            textAlign: "center",
-            p: 1,
-            borderRadius: 1,
-            bgcolor: "background.paper",
-          }}
-        >
-          {serverStatus === "starting" && (
-            <Typography
-              variant="body2"
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: 1,
-              }}
-            >
-              <span className="loading loading-spinner loading-xs"></span>
-              <span style={{ color: "#f59e0b" }}>Server starting...</span>
-            </Typography>
-          )}
-          {serverStatus === "connected" && (
-            <Typography
-              variant="body2"
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: 1,
-              }}
-            >
-              <span style={{ color: "#10b981" }}>✓ Server connected</span>
-            </Typography>
-          )}
-          {serverStatus === "error" && (
-            <Typography
-              variant="body2"
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: 1,
-              }}
-            >
-              <span style={{ color: "#ef4444" }}>× Server unavailable</span>
-            </Typography>
-          )}
-        </Box>
         <Box component="form" onSubmit={handleSubmit} noValidate>
           <Stack spacing={3}>
             {/* Social Login Buttons */}
@@ -313,6 +214,7 @@ export default function LoginHero() {
             <EnhancedTextField
               fullWidth
               label="Email"
+              name="email"
               type="email"
               autoComplete="email"
               value={formData.email}
@@ -333,6 +235,7 @@ export default function LoginHero() {
             <EnhancedTextField
               fullWidth
               label="Password"
+              name="password"
               type={showPassword ? "text" : "password"}
               autoComplete="current-password"
               value={formData.password}

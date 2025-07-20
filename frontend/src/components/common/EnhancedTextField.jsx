@@ -71,6 +71,9 @@ export default function EnhancedTextField({
   label,
   error,
   helperText,
+  name,
+  type,
+  autoComplete,
   ...props
 }) {
   const [visible, setVisible] = useState(false);
@@ -119,7 +122,9 @@ export default function EnhancedTextField({
       >
         <StyledTextField
           {...props}
-          autoComplete={props.autoComplete || "off"}
+          name={name}
+          type={type}
+          autoComplete={autoComplete}
           error={error}
           helperText={helperText}
           fullWidth

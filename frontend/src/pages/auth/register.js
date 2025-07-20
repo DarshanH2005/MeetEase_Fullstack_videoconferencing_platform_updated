@@ -1,7 +1,7 @@
 import React from "react";
 import CssBaseline from "@mui/material/CssBaseline";
 import Divider from "@mui/material/Divider";
-import { Box, Typography } from "@mui/material";
+import { Container, Box, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { motion } from "framer-motion";
 import AppTheme from "../../utils/shared-theme/appTheme";
@@ -18,7 +18,7 @@ const PageContainer = styled(Box)(({ theme }) => ({
   alignItems: "center",
   justifyContent: "center",
   padding: theme.spacing(3),
-  paddingTop: theme.spacing(12),
+  paddingTop: theme.spacing(12), // Add space for navbar
   [theme.breakpoints.down("sm")]: {
     paddingTop: theme.spacing(10),
   },
@@ -26,22 +26,22 @@ const PageContainer = styled(Box)(({ theme }) => ({
 
 const AnimatedBox = styled(motion.div)({
   width: "100%",
-  maxWidth: "500px",
+  maxWidth: "500px", // Increased from 450px
 });
 
-function RegisterPage() {
+export default function RegisterPage(props) {
   return (
-    <AppTheme>
+    <AppTheme {...props}>
       <CssBaseline enableColorScheme />
       <Box
-        sx={{
+        sx={(theme) => ({
           minHeight: "100vh",
           backgroundColor: "background.default",
           display: "flex",
           flexDirection: "column",
           position: "relative",
           overflow: "hidden",
-        }}
+        })}
       >
         <BlurryBlob
           firstBlobColor="#10b981"
@@ -104,9 +104,10 @@ function RegisterPage() {
                 color="text.secondary"
                 sx={{ fontSize: "1.1rem" }}
               >
-                Join MeetEase today
+                Join MeetEase and start connecting
               </Typography>
             </Box>
+
             <RegisterHero />
           </AnimatedBox>
         </PageContainer>
@@ -117,5 +118,3 @@ function RegisterPage() {
     </AppTheme>
   );
 }
-
-export default RegisterPage;

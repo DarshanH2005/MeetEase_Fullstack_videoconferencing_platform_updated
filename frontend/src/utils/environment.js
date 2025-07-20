@@ -1,4 +1,7 @@
-// Force production URL
-const server = "https://meetease-fullstack-videoconferencing.onrender.com";
+let IS_PROD = true;
+
+const server = IS_PROD
+  ? "https://meetease-fullstack-videoconferencing.onrender.com"
+  : "http://localhost:8000";
 
 export default server;
