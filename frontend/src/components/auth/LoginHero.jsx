@@ -66,19 +66,40 @@ export default function LoginHero() {
     let isMounted = true;
     const checkServer = async () => {
       try {
-        const response = await fetch("http://localhost:8000/auth/ping");
-        if (isMounted) {
-          setServerStatus(response.ok ? "connected" : "error");
-        }
-      } catch (error) {
-        if (isMounted) {
+        console.log("Checking server status...");
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/auth/ping`,
+          {
+            method: "GET",
+            credentials: "include",
+            headers: {
+              Accept: "application/json",
+            },
+          }
+        );
+
+        if (!isMounted) return;
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log("Server response:", data);
+          setServerStatus("connected");
+        } else {
+          console.log("Server responded with status:", response.status);
           setServerStatus("error");
         }
+      } catch (error) {
+        if (!isMounted) return;
+        console.error("Server check failed:", error);
+        setServerStatus("error");
       }
     };
 
-    const interval = setInterval(checkServer, 3000); // Check every 3 seconds
-    checkServer(); // Check immediately
+    // Initial check
+    checkServer();
+
+    // Set up interval for subsequent checks
+    const interval = setInterval(checkServer, 5000);
 
     return () => {
       isMounted = false;

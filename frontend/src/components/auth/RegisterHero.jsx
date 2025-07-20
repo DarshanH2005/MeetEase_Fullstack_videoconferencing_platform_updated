@@ -69,19 +69,40 @@ export default function RegisterHero() {
     let isMounted = true;
     const checkServer = async () => {
       try {
-        const response = await fetch("http://localhost:8000/auth/ping");
-        if (isMounted) {
-          setServerStatus(response.ok ? "connected" : "error");
-        }
-      } catch (error) {
-        if (isMounted) {
+        console.log("Checking server status...");
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/auth/ping`,
+          {
+            method: "GET",
+            credentials: "include",
+            headers: {
+              Accept: "application/json",
+            },
+          }
+        );
+
+        if (!isMounted) return;
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log("Server response:", data);
+          setServerStatus("connected");
+        } else {
+          console.log("Server responded with status:", response.status);
           setServerStatus("error");
         }
+      } catch (error) {
+        if (!isMounted) return;
+        console.error("Server check failed:", error);
+        setServerStatus("error");
       }
     };
 
-    const interval = setInterval(checkServer, 3000); // Check every 3 seconds
-    checkServer(); // Check immediately
+    // Initial check
+    checkServer();
+
+    // Set up interval for subsequent checks
+    const interval = setInterval(checkServer, 5000);
 
     return () => {
       isMounted = false;
@@ -189,20 +210,53 @@ export default function RegisterHero() {
     <BackgroundGradient>
       <FormContainer>
         {/* Server status indicator */}
-        <Box sx={{ mb: 2, textAlign: "center" }}>
+        <Box
+          sx={{
+            mb: 2,
+            textAlign: "center",
+            p: 1,
+            borderRadius: 1,
+            backgroundColor: "background.paper",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 1,
+          }}
+        >
           {serverStatus === "starting" && (
-            <Typography variant="body2" color="warning.main">
-              Server starting...
+            <Typography
+              variant="body2"
+              sx={{ display: "flex", alignItems: "center", gap: 1 }}
+            >
+              <span
+                style={{
+                  display: "inline-block",
+                  width: "8px",
+                  height: "8px",
+                  backgroundColor: "#f59e0b",
+                  borderRadius: "50%",
+                  animation: "pulse 1.5s infinite",
+                }}
+              ></span>
+              <span style={{ color: "#f59e0b" }}>Connecting to server...</span>
             </Typography>
           )}
           {serverStatus === "connected" && (
-            <Typography variant="body2" color="success.main">
-              Server connected
+            <Typography
+              variant="body2"
+              sx={{ display: "flex", alignItems: "center", gap: 1 }}
+            >
+              <span style={{ color: "#10b981" }}>✓ Server connected</span>
             </Typography>
           )}
           {serverStatus === "error" && (
-            <Typography variant="body2" color="error.main">
-              Server unavailable
+            <Typography
+              variant="body2"
+              sx={{ display: "flex", alignItems: "center", gap: 1 }}
+            >
+              <span style={{ color: "#ef4444" }}>
+                × Server unavailable - retrying...
+              </span>
             </Typography>
           )}
         </Box>

@@ -17,7 +17,24 @@ const server = createServer(app);
 let io;
 
 app.set("port", process.env.PORT || 8000);
-app.use(cors());
+// CORS configuration
+app.use((req, res, next) => {
+  const allowedOrigins = ["http://localhost:3000", "http://127.0.0.1:3000"];
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+  }
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, DELETE, OPTIONS"
+  );
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  }
+  next();
+});
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -25,7 +42,18 @@ app.use("/api/v1/users", userroutes);
 
 // Auth status endpoint
 app.get("/auth/ping", (req, res) => {
-  res.status(200).json({ status: "ok" });
+  console.log("Ping received from:", req.headers.origin);
+  const allowedOrigins = ["http://localhost:3000", "http://127.0.0.1:3000"];
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+  }
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  res.status(200).json({
+    status: "ok",
+    timestamp: new Date().toISOString(),
+    server: "MeetEase Backend",
+  });
 });
 
 app.get("/", (req, res) => {
