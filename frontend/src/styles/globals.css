@@ -1,0 +1,113 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+/* Let MUI handle the background colors */
+#__next {
+  min-height: 100vh;
+}
+
+/* Enhanced gradient dock wrapper styles */
+.gradient-dock-wrapper {
+  /* Create a stacking context to isolate gradient effects */
+  isolation: isolate;
+  z-index: 1000;
+  /* Subtle base glow effect */
+  filter: drop-shadow(0 0 8px rgba(79, 70, 229, 0.2));
+  /* Ensure wrapper doesn't shift */
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+}
+
+.gradient-dock-wrapper:hover {
+  filter: drop-shadow(0 0 12px rgba(79, 70, 229, 0.3)) 
+          drop-shadow(0 0 20px rgba(124, 58, 237, 0.2));
+}
+
+/* Dock container stability */
+.gradient-dock-wrapper > div {
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+}
+
+/* Ensure all children maintain their original colors */
+.gradient-dock-wrapper * {
+  /* Preserve original text/icon colors */
+  color: inherit !important;
+  /* Prevent gradient from affecting content */
+  mix-blend-mode: normal !important;
+  /* Create stacking context for icons */
+  position: relative;
+  z-index: 1;
+}
+
+/* Specific isolation for Material-UI icons */
+.gradient-dock-wrapper svg {
+  color: inherit !important;
+  fill: currentColor !important;
+  position: relative;
+  z-index: 2;
+  /* Prevent any visual distortion */
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+/* Ensure buttons maintain their functionality */
+.gradient-dock-wrapper button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  z-index: 1;
+  /* Reduce excessive transform on hover */
+  will-change: transform;
+  /* Prevent layout shifts */
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Prevent icon displacement during scaling */
+.gradient-dock-wrapper button > div {
+  transform-origin: center center;
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* Ensure icons stay centered during scaling */
+.gradient-dock-wrapper svg {
+  transform-origin: center center;
+  backface-visibility: hidden;
+}
+
+/* Badge component isolation */
+.gradient-dock-wrapper .MuiBadge-root {
+  position: relative;
+  z-index: 2;
+}
+
+.gradient-dock-wrapper .MuiBadge-badge {
+  background-color: #ef4444 !important;
+  color: white !important;
+  z-index: 3;
+}
