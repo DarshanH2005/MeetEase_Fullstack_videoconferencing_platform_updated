@@ -66,7 +66,7 @@ export default function LoginHero() {
     let isMounted = true;
     const checkServer = async () => {
       try {
-        const response = await fetch('http://localhost:8000/auth/ping');
+        const response = await fetch("http://localhost:8000/auth/ping");
         if (isMounted) {
           setServerStatus(response.ok ? "connected" : "error");
         }
@@ -197,21 +197,53 @@ export default function LoginHero() {
     <BackgroundGradient>
       <FormContainer>
         {/* Server status indicator */}
-        <Box sx={{ mb: 2, textAlign: "center", p: 1, borderRadius: 1, bgcolor: 'background.paper' }}>
+        <Box
+          sx={{
+            mb: 2,
+            textAlign: "center",
+            p: 1,
+            borderRadius: 1,
+            bgcolor: "background.paper",
+          }}
+        >
           {serverStatus === "starting" && (
-            <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
+            <Typography
+              variant="body2"
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 1,
+              }}
+            >
               <span className="loading loading-spinner loading-xs"></span>
-              <span style={{ color: '#f59e0b' }}>Server starting...</span>
+              <span style={{ color: "#f59e0b" }}>Server starting...</span>
             </Typography>
           )}
           {serverStatus === "connected" && (
-            <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
-              <span style={{ color: '#10b981' }}>✓ Server connected</span>
+            <Typography
+              variant="body2"
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 1,
+              }}
+            >
+              <span style={{ color: "#10b981" }}>✓ Server connected</span>
             </Typography>
           )}
           {serverStatus === "error" && (
-            <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
-              <span style={{ color: '#ef4444' }}>× Server unavailable</span>
+            <Typography
+              variant="body2"
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 1,
+              }}
+            >
+              <span style={{ color: "#ef4444" }}>× Server unavailable</span>
             </Typography>
           )}
         </Box>

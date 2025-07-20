@@ -1,21 +1,4 @@
 import React, { useState, useEffect } from "react";
-// Server status: 'starting', 'connected', 'error'
-const [serverStatus, setServerStatus] = useState("starting");
-
-useEffect(() => {
-  let isMounted = true;
-  setServerStatus("starting");
-  fetch(process.env.NEXT_PUBLIC_API_URL + "/auth/ping", { method: "GET" })
-    .then((res) => {
-      if (isMounted) setServerStatus(res.ok ? "connected" : "error");
-    })
-    .catch(() => {
-      if (isMounted) setServerStatus("error");
-    });
-  return () => {
-    isMounted = false;
-  };
-}, []);
 import {
   Box,
   Typography,
@@ -77,8 +60,35 @@ const SocialButton = styled(motion.button)(({ theme }) => ({
 }));
 
 export default function RegisterHero() {
+  // Server status: 'starting', 'connected', 'error'
+  const [serverStatus, setServerStatus] = useState("starting");
   const { actions } = useApp();
   const { showNotification } = actions;
+
+  useEffect(() => {
+    let isMounted = true;
+    const checkServer = async () => {
+      try {
+        const response = await fetch("http://localhost:8000/auth/ping");
+        if (isMounted) {
+          setServerStatus(response.ok ? "connected" : "error");
+        }
+      } catch (error) {
+        if (isMounted) {
+          setServerStatus("error");
+        }
+      }
+    };
+
+    const interval = setInterval(checkServer, 3000); // Check every 3 seconds
+    checkServer(); // Check immediately
+
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
+  }, []);
+
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
