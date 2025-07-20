@@ -19,10 +19,16 @@ let io;
 app.set("port", process.env.PORT || 8000);
 // CORS configuration
 app.use((req, res, next) => {
-  const allowedOrigins = ["http://localhost:3000", "http://127.0.0.1:3000"];
+  const allowedOrigins = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "https://meet-ease-fullstack-videoconferencing-platform-updat-byvf4lf99.vercel.app",
+  ];
   const origin = req.headers.origin;
   if (allowedOrigins.includes(origin)) {
     res.setHeader("Access-Control-Allow-Origin", origin);
+  } else {
+    res.setHeader("Access-Control-Allow-Origin", "*");
   }
   res.setHeader(
     "Access-Control-Allow-Methods",
