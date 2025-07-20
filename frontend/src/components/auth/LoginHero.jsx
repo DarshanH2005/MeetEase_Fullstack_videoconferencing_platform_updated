@@ -18,6 +18,7 @@ import EnhancedTextField from "../common/EnhancedTextField";
 import EnhancedButton from "../common/EnhancedButton";
 import { useApp } from "../../context/AppContext";
 import { loginUser } from "../../utils/auth";
+import server from "../../utils/environment";
 
 const FormContainer = styled(Box)(({ theme }) => ({
   padding: theme.spacing(4),
@@ -67,16 +68,15 @@ export default function LoginHero() {
     const checkServer = async () => {
       try {
         console.log("Checking server status...");
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/auth/ping`,
-          {
-            method: "GET",
-            credentials: "include",
-            headers: {
-              Accept: "application/json",
-            },
-          }
-        );
+        const pingUrl = `${server}/auth/ping`;
+        console.log("Pinging server at:", pingUrl);
+        const response = await fetch(pingUrl, {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            Accept: "application/json",
+          },
+        });
 
         if (!isMounted) return;
 
