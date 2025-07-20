@@ -1,5 +1,7 @@
+import server from './environment';
+
 // Frontend authentication utilities
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+const API_BASE_URL = `${server}/api/v1`;
 
 // Token management
 export const getAuthToken = () => {
