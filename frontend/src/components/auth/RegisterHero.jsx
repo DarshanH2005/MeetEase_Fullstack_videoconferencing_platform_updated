@@ -1,4 +1,21 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+// Server status: 'starting', 'connected', 'error'
+const [serverStatus, setServerStatus] = useState("starting");
+
+useEffect(() => {
+  let isMounted = true;
+  setServerStatus("starting");
+  fetch(process.env.NEXT_PUBLIC_API_URL + "/auth/ping", { method: "GET" })
+    .then((res) => {
+      if (isMounted) setServerStatus(res.ok ? "connected" : "error");
+    })
+    .catch(() => {
+      if (isMounted) setServerStatus("error");
+    });
+  return () => {
+    isMounted = false;
+  };
+}, []);
 import {
   Box,
   Typography,
@@ -161,6 +178,24 @@ export default function RegisterHero() {
   return (
     <BackgroundGradient>
       <FormContainer>
+        {/* Server status indicator */}
+        <Box sx={{ mb: 2, textAlign: "center" }}>
+          {serverStatus === "starting" && (
+            <Typography variant="body2" color="warning.main">
+              Server starting...
+            </Typography>
+          )}
+          {serverStatus === "connected" && (
+            <Typography variant="body2" color="success.main">
+              Server connected
+            </Typography>
+          )}
+          {serverStatus === "error" && (
+            <Typography variant="body2" color="error.main">
+              Server unavailable
+            </Typography>
+          )}
+        </Box>
         <Box component="form" onSubmit={handleSubmit} noValidate>
           <Stack spacing={3}>
             {/* Social Registration Buttons */}
@@ -207,6 +242,7 @@ export default function RegisterHero() {
               fullWidth
               label="Full Name"
               type="text"
+              autoComplete="name"
               value={formData.fullName}
               onChange={handleInputChange("fullName")}
               error={!!errors.fullName}
@@ -226,6 +262,7 @@ export default function RegisterHero() {
               fullWidth
               label="Email"
               type="email"
+              autoComplete="email"
               value={formData.email}
               onChange={handleInputChange("email")}
               error={!!errors.email}
@@ -245,6 +282,7 @@ export default function RegisterHero() {
               fullWidth
               label="Password"
               type={showPassword ? "text" : "password"}
+              autoComplete="new-password"
               value={formData.password}
               onChange={handleInputChange("password")}
               error={!!errors.password}
@@ -275,6 +313,7 @@ export default function RegisterHero() {
               fullWidth
               label="Confirm Password"
               type={showConfirmPassword ? "text" : "password"}
+              autoComplete="new-password"
               value={formData.confirmPassword}
               onChange={handleInputChange("confirmPassword")}
               error={!!errors.confirmPassword}

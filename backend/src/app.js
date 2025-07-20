@@ -26,7 +26,10 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use('/api/v1/users', userroutes);
 
-
+// Auth status endpoint
+app.get('/auth/ping', (req, res) => {
+    res.status(200).json({ status: 'ok' });
+});
 
 app.get('/', (req, res) => {
     res.send('Server is ready');
