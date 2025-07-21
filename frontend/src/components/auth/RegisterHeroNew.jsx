@@ -25,6 +25,20 @@ import EnhancedButton from "../common/EnhancedButton";
 import { useApp } from "../../context/AppContext";
 import { registerUser } from "../../utils/auth";
 import server from "../../utils/environment";
+
+const { actions } = useApp();
+const { showNotification, setUserData, setAuthenticated } = actions;
+const [formData, setFormData] = useState({
+  fullName: "",
+  email: "",
+  password: "",
+  confirmPassword: "",
+});
+const [showPassword, setShowPassword] = useState(false);
+const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+const [loading, setLoading] = useState(false);
+const [errors, setErrors] = useState({});
+
 // Backend wakeup notification logic
 useEffect(() => {
   let didRespond = false;
