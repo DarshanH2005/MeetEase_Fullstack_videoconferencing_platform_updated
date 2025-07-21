@@ -21,6 +21,11 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Health check endpoint for frontend wakeup
+app.get("/api/v1/ping", (req, res) => {
+  res.status(200).json({ message: "pong", status: "ok" });
+});
+
 app.use("/api/v1/users", userroutes);
 
 app.get("/", (req, res) => {
