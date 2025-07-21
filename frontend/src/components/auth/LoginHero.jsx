@@ -20,45 +20,6 @@ import { useApp } from "../../context/AppContext";
 import { loginUser } from "../../utils/auth";
 import server from "../../utils/environment";
 
-const { actions } = useApp();
-const { showNotification, setUserData, setAuthenticated } = actions;
-const [formData, setFormData] = useState({
-  email: "",
-  password: "",
-});
-const [showPassword, setShowPassword] = useState(false);
-const [loading, setLoading] = useState(false);
-const [errors, setErrors] = useState({});
-
-// Backend wakeup notification logic
-useEffect(() => {
-  let didRespond = false;
-  let notifyTimeout = setTimeout(() => {
-    if (!didRespond)
-      showNotification("Waking up server, please wait...", "info");
-  }, 500);
-
-  fetch(server + "/api/v1/ping", { method: "GET" })
-    .then(async (res) => {
-      didRespond = true;
-      clearTimeout(notifyTimeout);
-      if (res.ok) {
-        showNotification("Server connected!", "success");
-      } else {
-        showNotification("Server responded with error.", "warning");
-      }
-    })
-    .catch(() => {
-      didRespond = true;
-      clearTimeout(notifyTimeout);
-      showNotification(
-        "Server failed to respond. Please try again later.",
-        "error"
-      );
-    });
-  // eslint-disable-next-line
-}, []);
-
 const FormContainer = styled(Box)(({ theme }) => ({
   padding: theme.spacing(4),
   width: "100%",
