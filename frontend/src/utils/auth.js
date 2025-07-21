@@ -1,6 +1,8 @@
 // Frontend authentication utilities
+// Use deployed backend by default, override with env var if set
 const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
+  process.env.NEXT_PUBLIC_API_URL ||
+  "https://meetease-fullstack-videoconferencing.onrender.com/api/v1";
 
 // Token management
 export const getAuthToken = () => {
