@@ -20,11 +20,9 @@ export default function LoginPage() {
         }}
       >
         <Typography variant="h4">Login Page</Typography>
-        <Button variant="contained" href="/auth/login">
-          Go to Login Form
-        </Button>
+        <Button variant="contained">Temporary Login Button</Button>
         <Typography variant="body2">
-          Use /auth/login for the full login experience
+          Login functionality will be restored after build fix
         </Typography>
       </Box>
     </>

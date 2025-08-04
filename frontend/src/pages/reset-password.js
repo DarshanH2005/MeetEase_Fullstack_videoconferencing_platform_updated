@@ -116,16 +116,17 @@ export default function ResetPasswordPage() {
     try {
       // Simulate API call for password reset
       // In a real app, this would call your backend API
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      setMessage("If an account with that email exists, we've sent you a password reset link.");
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
+      setMessage(
+        "If an account with that email exists, we've sent you a password reset link."
+      );
       actions.showNotification("Password reset email sent!", "success");
-      
+
       // Redirect to login after a delay
       setTimeout(() => {
         router.push("/login");
       }, 3000);
-      
     } catch (error) {
       setError("Something went wrong. Please try again later.");
       actions.showNotification("Failed to send reset email", "error");
@@ -148,9 +149,12 @@ export default function ResetPasswordPage() {
     <>
       <Head>
         <title>Reset Password - MeetEase</title>
-        <meta name="description" content="Reset your MeetEase account password" />
+        <meta
+          name="description"
+          content="Reset your MeetEase account password"
+        />
       </Head>
-      
+
       <StyledContainer maxWidth={false}>
         <motion.div
           initial={{ opacity: 0, y: 20 }}

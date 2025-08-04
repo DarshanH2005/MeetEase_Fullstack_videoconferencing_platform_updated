@@ -11,6 +11,19 @@ const oauthStates = new Map();
 
 // Google OAuth routes with enhanced security
 router.get("/google", (req, res, next) => {
+  // Check if Google OAuth is configured
+  if (
+    !process.env.GOOGLE_CLIENT_ID ||
+    !process.env.GOOGLE_CLIENT_SECRET ||
+    !process.env.GOOGLE_CALLBACK_URL
+  ) {
+    return res.status(503).json({
+      success: false,
+      message: "Google OAuth is not configured on this server",
+      error: "OAUTH_NOT_CONFIGURED",
+    });
+  }
+
   // Generate secure state parameter for CSRF protection
   const state = crypto.randomBytes(32).toString("hex");
   const timestamp = Date.now();
@@ -76,6 +89,12 @@ router.get(
   passport.authenticate("google", { session: false }),
   async (req, res) => {
     try {
+      // Check if Google OAuth is configured (additional safety check)
+      if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
+        return res.redirect(
+          `${process.env.FRONTEND_URL}/auth/login?error=oauth_not_configured`
+        );
+      }
       const user = req.user;
 
       if (!user) {

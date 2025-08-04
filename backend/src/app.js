@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 import cors from "cors";
 import userroutes from "./routes/users.routes.js";
 import authroutes from "./routes/auth.routes.js";
+import healthroutes from "./routes/health.routes.js";
 import { ClerkExpressRequireAuth } from "@clerk/clerk-sdk-node";
 import { connecttosocket } from "./controllers/socketManager.js";
 import dotenv from "dotenv";
@@ -48,6 +49,7 @@ app.get("/api/v1/ping", (req, res) => {
 
 app.use("/api/v1/users", userroutes);
 app.use("/api/v1/auth", authroutes);
+app.use("/api/v1", healthroutes);
 
 app.get("/", (req, res) => {
   res.send("Server is ready");
