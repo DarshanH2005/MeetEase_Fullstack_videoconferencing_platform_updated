@@ -18,6 +18,7 @@ import EnhancedTextField from "../common/EnhancedTextField";
 import EnhancedButton from "../common/EnhancedButton";
 import { useApp } from "../../context/AppContext";
 import { loginUser } from "../../utils/auth";
+import { loginWithGoogle } from "../../utils/oauth";
 import server from "../../utils/environment";
 
 const FormContainer = styled(Box)(({ theme }) => ({
@@ -67,6 +68,32 @@ export default function LoginHero() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
+
+  // Backend wakeup notification logic
+  useEffect(() => {
+    let didCancel = false;
+    showNotification("Waking up server, please wait...", "info");
+    fetch(server + "/api/v1/ping", { method: "GET" })
+      .then(async (res) => {
+        if (didCancel) return;
+        if (res.ok) {
+          showNotification("Server connected!", "success");
+        } else {
+          showNotification("Server responded with error.", "warning");
+        }
+      })
+      .catch(() => {
+        if (!didCancel) {
+          showNotification(
+            "Server failed to respond. Please try again later.",
+            "error"
+          );
+        }
+      });
+    return () => {
+      didCancel = true;
+    };
+  }, []);
 
   const validateForm = () => {
     const newErrors = {};
@@ -164,7 +191,12 @@ export default function LoginHero() {
   };
 
   const handleSocialLogin = (provider) => {
-    showNotification(`${provider} login will be implemented soon`, "info");
+    if (provider === "Google") {
+      console.log("🔐 Starting Google OAuth from LoginHero...");
+      loginWithGoogle("login");
+    } else {
+      showNotification(`${provider} login will be implemented soon`, "info");
+    }
   };
 
   return (

@@ -3,11 +3,13 @@ import { createServer } from "http";
 import mongoose from "mongoose";
 import cors from "cors";
 import userroutes from "./routes/users.routes.js";
+import authroutes from "./routes/auth.routes.js";
 import { ClerkExpressRequireAuth } from "@clerk/clerk-sdk-node";
 import { connecttosocket } from "./controllers/socketManager.js";
 import dotenv from "dotenv";
 import httpStatus from "http-status";
 import { Server } from "socket.io";
+import passport from "./config/passport.js";
 
 // Load environment variables
 dotenv.config();
@@ -17,9 +19,27 @@ const server = createServer(app);
 let io;
 
 app.set("port", process.env.PORT || 8000);
-app.use(cors());
+
+// CORS configuration for development
+app.use(
+  cors({
+    origin: [
+      "http://localhost:3000",
+      "http://localhost:3001",
+      "http://127.0.0.1:3000",
+      "http://127.0.0.1:3001",
+    ],
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Initialize Passport
+app.use(passport.initialize());
 
 // Health check endpoint for frontend wakeup
 app.get("/api/v1/ping", (req, res) => {
@@ -27,6 +47,7 @@ app.get("/api/v1/ping", (req, res) => {
 });
 
 app.use("/api/v1/users", userroutes);
+app.use("/api/v1/auth", authroutes);
 
 app.get("/", (req, res) => {
   res.send("Server is ready");

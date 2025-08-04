@@ -1,15 +1,21 @@
 import { Router } from "express";
-import { 
-    login, 
-    register, 
-    getProfile, 
-    updateProfile, 
-    addMeetingActivity, 
-    getMeetingHistory 
+import {
+  login,
+  register,
+  getProfile,
+  updateProfile,
+  addMeetingActivity,
+  getMeetingHistory,
+  forgotPassword,
+  resetPassword,
 } from "../controllers/user.controller.js";
 import { authenticateToken } from "../middleware/auth.js";
 
 const router = Router();
+
+// Forgot/reset password
+router.route("/forgot-password").post(forgotPassword);
+router.route("/reset-password").post(resetPassword);
 
 // Public routes (no authentication required)
 router.route("/login").post(login);

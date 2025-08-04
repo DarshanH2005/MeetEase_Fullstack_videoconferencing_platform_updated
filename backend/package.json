@@ -9,21 +9,32 @@
     "dev": "nodemon src/app.js",
     "prod": "pm2 start src/app.js --name meetease-backend"
   },
-  "keywords": ["video-conferencing", "webrtc", "socket.io", "express"],
+  "keywords": [
+    "video-conferencing",
+    "webrtc",
+    "socket.io",
+    "express"
+  ],
   "author": "Your Name",
   "license": "MIT",
   "dependencies": {
     "@clerk/clerk-sdk-node": "^5.1.6",
+    "@react-oauth/google": "^0.12.2",
     "bcrypt": "^5.0.1",
     "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
     "crypto": "^1.0.1",
     "dotenv": "^10.0.0",
     "express": "^4.21.2",
+    "google-auth-library": "^10.2.0",
     "http-status": "2.1.0",
     "jsonwebtoken": "^9.0.2",
+    "mailslurp-client": "^15.24.1",
     "mongoose": "^8.10.1",
+    "nodemailer": "^7.0.5",
     "passport": "^0.7.0",
+    "passport-google-oauth20": "^2.0.0",
+    "passport-jwt": "^4.0.1",
     "socket.io": "^4.0.1"
   },
   "devDependencies": {

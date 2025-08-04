@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 import AppTheme from "../../utils/shared-theme/appTheme";
 import EnhancedAppBar from "../../components/ui/EnhancedAppBar";
 import Footer from "../../utils/mainpage/components/Footer";
-import RegisterHero from "../../components/auth/RegisterHero";
+import RegisterHeroNew from "../../components/auth/RegisterHeroNew";
 import ToastNotification from "../../components/common/ToastNotification";
 import BlurryBlob from "../../components/ui/BlurryBlob";
 
@@ -108,7 +108,7 @@ export default function RegisterPage(props) {
               </Typography>
             </Box>
 
-            <RegisterHero />
+            <RegisterHeroNew />
           </AnimatedBox>
         </PageContainer>
         <Divider />

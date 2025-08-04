@@ -24,49 +24,8 @@ import EnhancedTextField from "../common/EnhancedTextField";
 import EnhancedButton from "../common/EnhancedButton";
 import { useApp } from "../../context/AppContext";
 import { registerUser } from "../../utils/auth";
+import { loginWithGoogle } from "../../utils/oauth";
 import server from "../../utils/environment";
-
-const { actions } = useApp();
-const { showNotification, setUserData, setAuthenticated } = actions;
-const [formData, setFormData] = useState({
-  fullName: "",
-  email: "",
-  password: "",
-  confirmPassword: "",
-});
-const [showPassword, setShowPassword] = useState(false);
-const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-const [loading, setLoading] = useState(false);
-const [errors, setErrors] = useState({});
-
-// Backend wakeup notification logic
-useEffect(() => {
-  let didRespond = false;
-  let notifyTimeout = setTimeout(() => {
-    if (!didRespond)
-      showNotification("Waking up server, please wait...", "info");
-  }, 500);
-
-  fetch(server + "/api/v1/ping", { method: "GET" })
-    .then(async (res) => {
-      didRespond = true;
-      clearTimeout(notifyTimeout);
-      if (res.ok) {
-        showNotification("Server connected!", "success");
-      } else {
-        showNotification("Server responded with error.", "warning");
-      }
-    })
-    .catch(() => {
-      didRespond = true;
-      clearTimeout(notifyTimeout);
-      showNotification(
-        "Server failed to respond. Please try again later.",
-        "error"
-      );
-    });
-  // eslint-disable-next-line
-}, []);
 
 const FormContainer = styled(Box)(({ theme }) => ({
   padding: theme.spacing(5),
@@ -121,6 +80,39 @@ export default function RegisterHeroNew() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
+  const [serverPinged, setServerPinged] = useState(false);
+
+  // Backend wakeup notification logic - run only once
+  useEffect(() => {
+    if (serverPinged) return; // Prevent multiple pings
+
+    let didRespond = false;
+    let notifyTimeout = setTimeout(() => {
+      if (!didRespond)
+        showNotification("Waking up server, please wait...", "info");
+    }, 500);
+
+    fetch(server + "/api/v1/ping", { method: "GET" })
+      .then(async (res) => {
+        didRespond = true;
+        clearTimeout(notifyTimeout);
+        setServerPinged(true); // Mark as pinged
+        if (res.ok) {
+          showNotification("Server connected!", "success");
+        } else {
+          showNotification("Server responded with error.", "warning");
+        }
+      })
+      .catch(() => {
+        didRespond = true;
+        clearTimeout(notifyTimeout);
+        setServerPinged(true); // Mark as pinged even on error
+        showNotification(
+          "Server failed to respond. Please try again later.",
+          "error"
+        );
+      });
+  }, []); // Empty dependency array - run only once on mount
 
   const validateForm = () => {
     const newErrors = {};
@@ -222,10 +214,15 @@ export default function RegisterHeroNew() {
   };
 
   const handleSocialLogin = (provider) => {
-    showNotification(
-      `${provider} registration will be implemented soon`,
-      "info"
-    );
+    if (provider === "Google") {
+      console.log("🔐 Starting Google OAuth...");
+      loginWithGoogle();
+    } else {
+      showNotification(
+        `${provider} registration will be implemented soon`,
+        "info"
+      );
+    }
   };
 
   return (

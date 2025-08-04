@@ -62,6 +62,33 @@ const SocialButton = styled(motion.button)(({ theme }) => ({
 export default function RegisterHero() {
   const { actions } = useApp();
   const { showNotification } = actions;
+  // Backend wakeup notification logic
+  React.useEffect(() => {
+    let didCancel = false;
+    showNotification("Waking up server, please wait...", "info");
+    fetch(require("../../utils/environment").default + "/api/v1/ping", {
+      method: "GET",
+    })
+      .then(async (res) => {
+        if (didCancel) return;
+        if (res.ok) {
+          showNotification("Server connected!", "success");
+        } else {
+          showNotification("Server responded with error.", "warning");
+        }
+      })
+      .catch(() => {
+        if (!didCancel) {
+          showNotification(
+            "Server failed to respond. Please try again later.",
+            "error"
+          );
+        }
+      });
+    return () => {
+      didCancel = true;
+    };
+  }, []);
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",

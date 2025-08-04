@@ -1,6 +1,6 @@
-import React from 'react';
-import LoginForm from '../components/auth/LoginForm';
-import Head from 'next/head';
+import React from "react";
+import LoginForm from "../components/auth/LoginForm_new";
+import Head from "next/head";
 
 export default function LoginPage() {
   return (
