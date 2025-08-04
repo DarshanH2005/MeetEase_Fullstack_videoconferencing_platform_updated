@@ -95,6 +95,8 @@ const SignupForm = () => {
   const [fieldErrors, setFieldErrors] = useState({});
   const { actions } = useApp();
   const router = useRouter();
+  // Track the notification id for the persistent toast
+  const [wakeupToastId, setWakeupToastId] = useState(null);
 
   const handleChange = (e) => {
     setFormData({
@@ -157,6 +159,13 @@ const SignupForm = () => {
     setIsLoading(true);
     setError("");
 
+    // Show persistent 'server is waking up' toast
+    const toastId = actions.showNotification(
+      "Server is waking up... This may take a few seconds.",
+      "info"
+    );
+    setWakeupToastId(toastId);
+
     try {
       const result = await registerUser(
         formData.name,
@@ -164,6 +173,10 @@ const SignupForm = () => {
         formData.email,
         formData.password
       );
+
+      // Remove the persistent toast
+      actions.removeNotification(toastId);
+      setWakeupToastId(null);
 
       if (result.success && result.user) {
         // Update app context
@@ -178,9 +191,19 @@ const SignupForm = () => {
         router.push("/");
       } else {
         setError(result.message || "Registration failed. Please try again.");
+        actions.showNotification(
+          result.message || "Registration failed. Please try again.",
+          "error"
+        );
       }
     } catch (error) {
+      actions.removeNotification(toastId);
+      setWakeupToastId(null);
       setError("Unable to connect to server. Please try again later.");
+      actions.showNotification(
+        "Unable to connect to server. Please try again later.",
+        "error"
+      );
     } finally {
       setIsLoading(false);
     }

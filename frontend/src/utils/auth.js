@@ -1,7 +1,10 @@
 // Frontend authentication utilities
 // Use local backend for development, override with env var if set
 const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
+  process.env.NEXT_PUBLIC_API_URL ||
+  (process.env.NODE_ENV === "production"
+    ? "https://meetease-fullstack-videoconferencing.onrender.com/api/v1"
+    : "http://localhost:8000/api/v1");
 
 // Token management with 24-hour expiry
 export const getAuthToken = () => {
