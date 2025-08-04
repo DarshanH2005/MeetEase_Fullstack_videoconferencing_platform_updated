@@ -1,22 +1,22 @@
-import React, { createContext, useContext, useReducer, useEffect } from 'react';
-import { getUserData, getAuthToken, isAuthenticated } from '../utils/auth';
+import React, { createContext, useContext, useReducer, useEffect } from "react";
+import { getUserData, getAuthToken, isAuthenticated } from "../utils/auth";
 
 // Initial state
 const initialState = {
   user: {
     id: null,
-    name: '',
-    username: '',
-    email: '',
-    avatar: '',
-    displayName: '',
+    name: "",
+    username: "",
+    email: "",
+    avatar: "",
+    displayName: "",
     isGuest: true,
     isAuthenticated: false,
     preferences: {
       defaultMicMuted: false,
       defaultVideoOff: false,
-      theme: 'dark'
-    }
+      theme: "dark",
+    },
   },
   meeting: {
     currentMeetingId: null,
@@ -31,18 +31,18 @@ const initialState = {
 
 // Action types
 export const ActionTypes = {
-  SET_USER_DISPLAY_NAME: 'SET_USER_DISPLAY_NAME',
-  SET_AUTHENTICATED: 'SET_AUTHENTICATED',
-  SET_USER_DATA: 'SET_USER_DATA',
-  SET_GUEST_INFO: 'SET_GUEST_INFO',
-  LOGOUT_USER: 'LOGOUT_USER',
-  JOIN_MEETING: 'JOIN_MEETING',
-  START_MEETING: 'START_MEETING',
-  LEAVE_MEETING: 'LEAVE_MEETING',
-  SET_LOADING: 'SET_LOADING',
-  ADD_NOTIFICATION: 'ADD_NOTIFICATION',
-  REMOVE_NOTIFICATION: 'REMOVE_NOTIFICATION',
-  UPDATE_PARTICIPANTS: 'UPDATE_PARTICIPANTS',
+  SET_USER_DISPLAY_NAME: "SET_USER_DISPLAY_NAME",
+  SET_AUTHENTICATED: "SET_AUTHENTICATED",
+  SET_USER_DATA: "SET_USER_DATA",
+  SET_GUEST_INFO: "SET_GUEST_INFO",
+  LOGOUT_USER: "LOGOUT_USER",
+  JOIN_MEETING: "JOIN_MEETING",
+  START_MEETING: "START_MEETING",
+  LEAVE_MEETING: "LEAVE_MEETING",
+  SET_LOADING: "SET_LOADING",
+  ADD_NOTIFICATION: "ADD_NOTIFICATION",
+  REMOVE_NOTIFICATION: "REMOVE_NOTIFICATION",
+  UPDATE_PARTICIPANTS: "UPDATE_PARTICIPANTS",
 };
 
 // Reducer
@@ -57,7 +57,7 @@ function appReducer(state, action) {
           name: action.payload, // Keep both for backward compatibility
         },
       };
-    
+
     case ActionTypes.SET_AUTHENTICATED:
       return {
         ...state,
@@ -96,18 +96,18 @@ function appReducer(state, action) {
         ...state,
         user: {
           id: null,
-          name: '',
-          username: '',
-          email: '',
-          avatar: '',
-          displayName: '',
+          name: "",
+          username: "",
+          email: "",
+          avatar: "",
+          displayName: "",
           isGuest: true,
           isAuthenticated: false,
           preferences: {
             defaultMicMuted: false,
             defaultVideoOff: false,
-            theme: 'dark'
-          }
+            theme: "dark",
+          },
         },
         meeting: {
           currentMeetingId: null,
@@ -115,7 +115,7 @@ function appReducer(state, action) {
           participants: [],
         },
       };
-    
+
     case ActionTypes.JOIN_MEETING:
       return {
         ...state,
@@ -135,7 +135,7 @@ function appReducer(state, action) {
           isInMeeting: true,
         },
       };
-    
+
     case ActionTypes.LEAVE_MEETING:
       return {
         ...state,
@@ -146,7 +146,7 @@ function appReducer(state, action) {
           participants: [],
         },
       };
-    
+
     case ActionTypes.SET_LOADING:
       return {
         ...state,
@@ -155,7 +155,7 @@ function appReducer(state, action) {
           isLoading: action.payload,
         },
       };
-    
+
     case ActionTypes.ADD_NOTIFICATION:
       return {
         ...state,
@@ -164,7 +164,7 @@ function appReducer(state, action) {
           notifications: [...state.ui.notifications, action.payload],
         },
       };
-    
+
     case ActionTypes.REMOVE_NOTIFICATION:
       return {
         ...state,
@@ -175,7 +175,7 @@ function appReducer(state, action) {
           ),
         },
       };
-    
+
     default:
       return state;
   }
@@ -192,7 +192,7 @@ export function AppProvider({ children }) {
   useEffect(() => {
     const userData = getUserData();
     const token = getAuthToken();
-    
+
     if (userData && token && isAuthenticated()) {
       dispatch({
         type: ActionTypes.SET_USER_DATA,
@@ -200,7 +200,7 @@ export function AppProvider({ children }) {
       });
     } else {
       // Load display name for backward compatibility
-      const savedDisplayName = localStorage.getItem('meetease_display_name');
+      const savedDisplayName = localStorage.getItem("meetease_display_name");
       if (savedDisplayName) {
         dispatch({
           type: ActionTypes.SET_USER_DISPLAY_NAME,
@@ -213,7 +213,7 @@ export function AppProvider({ children }) {
   // Save display name to localStorage when it changes (backward compatibility)
   useEffect(() => {
     if (state.user.displayName && state.user.isGuest) {
-      localStorage.setItem('meetease_display_name', state.user.displayName);
+      localStorage.setItem("meetease_display_name", state.user.displayName);
     }
   }, [state.user.displayName, state.user.isGuest]);
 
@@ -222,11 +222,11 @@ export function AppProvider({ children }) {
     setDisplayName: (name) => {
       dispatch({ type: ActionTypes.SET_USER_DISPLAY_NAME, payload: name });
     },
-    
+
     setAuthenticated: (isAuthenticated) => {
-      dispatch({ 
-        type: ActionTypes.SET_AUTHENTICATED, 
-        payload: { isAuthenticated } 
+      dispatch({
+        type: ActionTypes.SET_AUTHENTICATED,
+        payload: { isAuthenticated },
       });
     },
 
@@ -241,64 +241,69 @@ export function AppProvider({ children }) {
     logoutUser: () => {
       dispatch({ type: ActionTypes.LOGOUT_USER });
     },
-    
+
     joinMeeting: (meetingId) => {
-      dispatch({ 
-        type: ActionTypes.JOIN_MEETING, 
-        payload: { meetingId } 
+      dispatch({
+        type: ActionTypes.JOIN_MEETING,
+        payload: { meetingId },
       });
     },
 
     startMeeting: (meetingId) => {
-      dispatch({ 
-        type: ActionTypes.START_MEETING, 
-        payload: { meetingId } 
+      dispatch({
+        type: ActionTypes.START_MEETING,
+        payload: { meetingId },
       });
     },
-    
+
     leaveMeeting: () => {
       dispatch({ type: ActionTypes.LEAVE_MEETING });
     },
-    
+
     setLoading: (isLoading) => {
       dispatch({ type: ActionTypes.SET_LOADING, payload: isLoading });
     },
-    
+
     addNotification: (notification) => {
       const id = Date.now().toString();
-      dispatch({ 
-        type: ActionTypes.ADD_NOTIFICATION, 
-        payload: { id, ...notification } 
+      dispatch({
+        type: ActionTypes.ADD_NOTIFICATION,
+        payload: { id, ...notification },
       });
       return id;
     },
 
-    showNotification: (message, type = 'info') => {
+    showNotification: (message, type = "info", options = {}) => {
       const id = Date.now().toString();
-      dispatch({ 
-        type: ActionTypes.ADD_NOTIFICATION, 
-        payload: { id, message, type } 
+      dispatch({
+        type: ActionTypes.ADD_NOTIFICATION,
+        payload: { id, message, type, ...options },
       });
       return id;
     },
-    
+
     removeNotification: (id) => {
       dispatch({ type: ActionTypes.REMOVE_NOTIFICATION, payload: id });
     },
-    
+
     updateParticipants: (participants) => {
-      dispatch({ type: ActionTypes.UPDATE_PARTICIPANTS, payload: participants });
+      dispatch({
+        type: ActionTypes.UPDATE_PARTICIPANTS,
+        payload: participants,
+      });
     },
   };
 
   return (
-    <AppContext.Provider value={{ 
-      state: {
-        ...state,
-        isAuthenticated: state.user.isAuthenticated, // Add direct access to auth status
-      }, 
-      actions 
-    }}>
+    <AppContext.Provider
+      value={{
+        state: {
+          ...state,
+          isAuthenticated: state.user.isAuthenticated, // Add direct access to auth status
+        },
+        actions,
+      }}
+    >
       {children}
     </AppContext.Provider>
   );
@@ -308,7 +313,7 @@ export function AppProvider({ children }) {
 export function useApp() {
   const context = useContext(AppContext);
   if (!context) {
-    throw new Error('useApp must be used within an AppProvider');
+    throw new Error("useApp must be used within an AppProvider");
   }
   return context;
 }

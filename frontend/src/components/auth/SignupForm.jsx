@@ -162,7 +162,8 @@ const SignupForm = () => {
     // Show persistent 'server is waking up' toast
     const toastId = actions.showNotification(
       "Server is waking up... This may take a few seconds.",
-      "info"
+      "info",
+      { persistent: true }
     );
     setWakeupToastId(toastId);
 

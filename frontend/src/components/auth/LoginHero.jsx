@@ -73,7 +73,7 @@ export default function LoginHero() {
   useEffect(() => {
     let didCancel = false;
     showNotification("Waking up server, please wait...", "info");
-    fetch(server + "/api/v1/ping", { method: "GET" })
+    fetch(server + "/ping", { method: "GET" })
       .then(async (res) => {
         if (didCancel) return;
         if (res.ok) {

@@ -92,7 +92,7 @@ export default function RegisterHeroNew() {
         showNotification("Waking up server, please wait...", "info");
     }, 500);
 
-    fetch(server + "/api/v1/ping", { method: "GET" })
+    fetch(server + "/ping", { method: "GET" })
       .then(async (res) => {
         didRespond = true;
         clearTimeout(notifyTimeout);

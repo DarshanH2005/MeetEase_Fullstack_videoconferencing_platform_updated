@@ -1,11 +1,12 @@
 // Use environment variables for deployment flexibility
 const IS_PROD = process.env.NODE_ENV === "production";
 
-const server =
-  process.env.NEXT_PUBLIC_API_URL ||
-  (IS_PROD
-    ? "https://meetease-fullstack-videoconferencing.onrender.com/api/v1"
-    : "http://localhost:8000/api/v1");
+// Base server URL without /api/v1 to prevent double paths
+const baseServer = IS_PROD
+  ? "https://meetease-fullstack-videoconferencing.onrender.com"
+  : "http://localhost:8000";
+
+const server = process.env.NEXT_PUBLIC_API_URL || `${baseServer}/api/v1`;
 
 export const OAUTH_CONFIG = {
   API_BASE_URL: server,

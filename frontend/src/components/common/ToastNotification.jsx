@@ -1,22 +1,23 @@
-import React from 'react';
-import { Snackbar, Alert, Slide } from '@mui/material';
-import { styled } from '@mui/material/styles';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useApp } from '../../context/AppContext';
+import React from "react";
+import { Snackbar, Alert, Slide } from "@mui/material";
+import { styled } from "@mui/material/styles";
+import { motion, AnimatePresence } from "framer-motion";
+import { useApp } from "../../context/AppContext";
 
 const StyledAlert = styled(Alert)(({ theme }) => ({
   borderRadius: theme.shape.borderRadius * 2,
-  backdropFilter: 'blur(20px)',
+  backdropFilter: "blur(20px)",
   border: `1px solid ${theme.palette.divider}`,
-  boxShadow: theme.palette.mode === 'dark'
-    ? '0 8px 32px rgba(0, 0, 0, 0.4)'
-    : '0 8px 32px rgba(0, 0, 0, 0.15)',
-  
-  '& .MuiAlert-icon': {
-    fontSize: '1.25rem',
+  boxShadow:
+    theme.palette.mode === "dark"
+      ? "0 8px 32px rgba(0, 0, 0, 0.4)"
+      : "0 8px 32px rgba(0, 0, 0, 0.15)",
+
+  "& .MuiAlert-icon": {
+    fontSize: "1.25rem",
   },
-  
-  '& .MuiAlert-message': {
+
+  "& .MuiAlert-message": {
     fontWeight: 500,
   },
 }));
@@ -39,9 +40,11 @@ export default function ToastNotification() {
         <Snackbar
           key={notification.id}
           open={true}
-          autoHideDuration={notification.duration || 5000}
+          autoHideDuration={
+            notification.persistent ? null : notification.duration || 5000
+          }
           onClose={() => handleClose(notification.id)}
-          anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+          anchorOrigin={{ vertical: "top", horizontal: "right" }}
           TransitionComponent={SlideTransition}
           sx={{ mt: 8 }}
         >
@@ -52,7 +55,7 @@ export default function ToastNotification() {
             transition={{ duration: 0.3 }}
           >
             <StyledAlert
-              severity={notification.type || 'info'}
+              severity={notification.type || "info"}
               onClose={() => handleClose(notification.id)}
               variant="filled"
             >
