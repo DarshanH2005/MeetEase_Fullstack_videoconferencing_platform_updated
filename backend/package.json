@@ -7,7 +7,8 @@
   "scripts": {
     "start": "node src/app.js",
     "dev": "nodemon src/app.js",
-    "prod": "pm2 start src/app.js --name meetease-backend"
+    "prod": "node src/app.js",
+    "build": "echo 'No build step required'"
   },
   "keywords": [
     "video-conferencing",
@@ -32,6 +33,7 @@
     "mailslurp-client": "^15.24.1",
     "mongoose": "^8.10.1",
     "nodemailer": "^7.0.5",
+    "nodemon": "^3.1.10",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
     "passport-jwt": "^4.0.1",
@@ -39,7 +41,6 @@
   },
   "devDependencies": {
     "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
-    "@esbuild-plugins/node-modules-polyfill": "^0.2.2",
-    "nodemon": "^3.1.10"
+    "@esbuild-plugins/node-modules-polyfill": "^0.2.2"
   }
 }

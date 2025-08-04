@@ -15,6 +15,10 @@ import passport from "./config/passport.js";
 // Load environment variables
 dotenv.config();
 
+console.log("🚀 Starting MeetEase Backend...");
+console.log("📍 Environment:", process.env.NODE_ENV || "development");
+console.log("🔌 Port:", process.env.PORT || 8000);
+
 const app = express();
 const server = createServer(app);
 let io;
@@ -76,18 +80,23 @@ app.use((err, req, res, next) => {
 
 const start = async () => {
   try {
-    await mongoose.connect(
-      process.env.MONGODB_URI ||
-        "mongodb+srv://darshan1970h:MUjdqTUP9nmG2Vhl@zoom.qqgjf.mongodb.net/?retryWrites=true&w=majority&appName=Zoom"
-    );
+    const mongoUri = process.env.MONGODB_URI || 
+      "mongodb+srv://darshan1970h:MUjdqTUP9nmG2Vhl@zoom.qqgjf.mongodb.net/?retryWrites=true&w=majority&appName=Zoom";
+    
+    console.log("🔗 Connecting to MongoDB...");
+    await mongoose.connect(mongoUri);
     console.log("✅ Connected to MongoDB");
 
     io = connecttosocket(server);
-    server.listen(process.env.PORT || 8000, () => {
-      console.log(`🚀 Server is running on port ${process.env.PORT || 8000}`);
+    const port = process.env.PORT || 8000;
+    server.listen(port, () => {
+      console.log(`🚀 Server is running on port ${port}`);
+      console.log(`🌐 Server URL: http://localhost:${port}`);
     });
   } catch (error) {
     console.error("❌ MongoDB Connection Error:", error.message);
+    console.error("❌ Full error:", error);
+    process.exit(1);
   }
 };
 
