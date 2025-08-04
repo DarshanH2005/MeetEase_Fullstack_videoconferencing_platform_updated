@@ -80,9 +80,10 @@ app.use((err, req, res, next) => {
 
 const start = async () => {
   try {
-    const mongoUri = process.env.MONGODB_URI || 
+    const mongoUri =
+      process.env.MONGODB_URI ||
       "mongodb+srv://darshan1970h:MUjdqTUP9nmG2Vhl@zoom.qqgjf.mongodb.net/?retryWrites=true&w=majority&appName=Zoom";
-    
+
     console.log("🔗 Connecting to MongoDB...");
     await mongoose.connect(mongoUri);
     console.log("✅ Connected to MongoDB");
