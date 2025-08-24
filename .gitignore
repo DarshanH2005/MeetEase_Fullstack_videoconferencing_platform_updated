@@ -48,6 +48,11 @@ Thumbs.db
 .idea/
 *.swp
 *.swo
+
+# Documentation files (except main README)
+*.md
+!README.md
+IMPLEMENTATION_GUIDES/
 *~
 
 # Temporary files

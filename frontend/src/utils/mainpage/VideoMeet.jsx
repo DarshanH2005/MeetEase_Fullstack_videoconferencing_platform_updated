@@ -218,9 +218,9 @@ export default function VideoMeet() {
   // Basic video/audio state
   const [videoAvailable, setVideoAvailable] = useState(true);
   const [audioAvailable, setAudioAvailable] = useState(true);
-  const [video, setVideo] = useState([]);
-  const [audio, setAudio] = useState();
-  const [screen, setScreen] = useState();
+  const [video, setVideo] = useState(true);
+  const [audio, setAudio] = useState(true);
+  const [screen, setScreen] = useState(false);
   const [screenAvailable, setScreenAvailable] = useState();
 
   // Meeting state
@@ -406,24 +406,82 @@ export default function VideoMeet() {
   };
 
   const getUserMedia = () => {
+    console.log(
+      "getUserMedia called - video:",
+      video,
+      "audio:",
+      audio,
+      "videoAvailable:",
+      videoAvailable,
+      "audioAvailable:",
+      audioAvailable
+    );
+
     if ((video && videoAvailable) || (audio && audioAvailable)) {
+      const constraints = {
+        video: video && videoAvailable,
+        audio: audio && audioAvailable,
+      };
+
+      console.log("Requesting media with constraints:", constraints);
+
       navigator.mediaDevices
-        .getUserMedia({ video: video, audio: audio })
-        .then(getUserMediaSuccess)
-        .then((stream) => {})
+        .getUserMedia(constraints)
+        .then((stream) => {
+          console.log("Got user media stream:", stream);
+          console.log("Audio tracks:", stream.getAudioTracks());
+          console.log("Video tracks:", stream.getVideoTracks());
+
+          getUserMediaSuccess(stream);
+        })
         .catch((e) => {
-          console.log(e);
+          console.error("getUserMedia error:", e);
           showToast(
             "destructive",
             "Media access failed",
-            "Unable to access camera or microphone"
+            `Unable to access ${audio ? "microphone" : ""} ${
+              video ? "camera" : ""
+            }: ${e.message}`
           );
         });
+    } else {
+      console.log("No media requested - creating silent stream");
+      // Create a silent stream if no media is requested
+      let blackSilence = (...args) =>
+        new MediaStream([black(...args), silence()]);
+      const stream = blackSilence();
+      getUserMediaSuccess(stream);
     }
   };
 
   const getUserMediaSuccess = (stream) => {
     try {
+      console.log("getUserMediaSuccess called with stream:", stream);
+      console.log("Stream audio tracks:", stream.getAudioTracks());
+      console.log("Stream video tracks:", stream.getVideoTracks());
+
+      // Ensure audio tracks are enabled if we have them
+      stream.getAudioTracks().forEach((track) => {
+        console.log(
+          "Audio track enabled:",
+          track.enabled,
+          "readyState:",
+          track.readyState
+        );
+        track.enabled = audio; // Enable/disable based on current audio state
+      });
+
+      // Ensure video tracks are enabled if we have them
+      stream.getVideoTracks().forEach((track) => {
+        console.log(
+          "Video track enabled:",
+          track.enabled,
+          "readyState:",
+          track.readyState
+        );
+        track.enabled = video; // Enable/disable based on current video state
+      });
+
       window.localStream = stream;
       if (localvideoRef.current) {
         localvideoRef.current.srcObject = stream;
@@ -431,8 +489,29 @@ export default function VideoMeet() {
       if (chatVideoRef.current) {
         chatVideoRef.current.srcObject = stream;
       }
+
+      // Update existing peer connections with new stream
+      Object.keys(connections).forEach((socketId) => {
+        if (connections[socketId] && connections[socketId].addStream) {
+          try {
+            // Remove old stream tracks
+            const senders = connections[socketId].getSenders();
+            senders.forEach((sender) => {
+              if (sender.track) {
+                connections[socketId].removeTrack(sender);
+              }
+            });
+
+            // Add new stream
+            connections[socketId].addStream(stream);
+            console.log("Updated stream for connection:", socketId);
+          } catch (err) {
+            console.log("Error updating stream for connection:", socketId, err);
+          }
+        }
+      });
     } catch (e) {
-      console.log(e);
+      console.error("getUserMediaSuccess error:", e);
     }
   };
 
@@ -800,9 +879,89 @@ export default function VideoMeet() {
     getUserMedia();
   };
 
+  // Quick audio diagnostic function
+  const testAudioAccess = async () => {
+    try {
+      console.log("Testing audio access...");
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: true,
+        video: false,
+      });
+      const audioTracks = stream.getAudioTracks();
+
+      if (audioTracks.length > 0) {
+        showToast(
+          "success",
+          "Microphone Test",
+          `Found ${audioTracks.length} audio device(s)`
+        );
+        console.log(
+          "Audio devices found:",
+          audioTracks.map((t) => ({ label: t.label, enabled: t.enabled }))
+        );
+
+        // Test audio level detection
+        const audioContext = new (window.AudioContext ||
+          window.webkitAudioContext)();
+        const analyser = audioContext.createAnalyser();
+        const microphone = audioContext.createMediaStreamSource(stream);
+        microphone.connect(analyser);
+
+        const dataArray = new Uint8Array(analyser.frequencyBinCount);
+        let testCount = 0;
+        const testInterval = setInterval(() => {
+          analyser.getByteFrequencyData(dataArray);
+          const average = dataArray.reduce((a, b) => a + b) / dataArray.length;
+          console.log("Audio level:", average);
+
+          testCount++;
+          if (testCount >= 10) {
+            // Test for 1 second
+            clearInterval(testInterval);
+            stream.getTracks().forEach((track) => track.stop());
+            audioContext.close();
+            showToast(
+              "info",
+              "Audio Test Complete",
+              "Check console for audio levels"
+            );
+          }
+        }, 100);
+      } else {
+        showToast("error", "No Audio Devices", "No microphone found");
+      }
+    } catch (error) {
+      console.error("Audio test error:", error);
+      showToast(
+        "error",
+        "Audio Test Failed",
+        error.message || "Could not access microphone"
+      );
+    }
+  };
+
   const handleAudio = () => {
-    setAudio(!audio);
-    getUserMedia();
+    console.log("handleAudio called - current audio state:", audio);
+    const newAudioState = !audio;
+    setAudio(newAudioState);
+
+    // If we have an existing stream, just toggle the audio tracks
+    if (window.localStream) {
+      window.localStream.getAudioTracks().forEach((track) => {
+        track.enabled = newAudioState;
+        console.log("Toggled audio track enabled:", track.enabled);
+      });
+
+      // Update the UI toast
+      showToast(
+        newAudioState ? "success" : "warning",
+        newAudioState ? "Microphone On" : "Microphone Off",
+        newAudioState ? "You can now speak" : "You are muted"
+      );
+    } else {
+      // Get new media stream
+      getUserMedia();
+    }
   };
 
   const handleScreen = () => {
